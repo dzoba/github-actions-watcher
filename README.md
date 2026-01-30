@@ -2,19 +2,27 @@
 
 A terminal UI for monitoring GitHub Actions workflow runs. Auto-detects the repo from your current directory, shows recent runs, and lets you drill into jobs and steps -- all without leaving the terminal.
 
-## Quick start
-
-```
-npx github-actions-watcher
-```
+Built with [Bubbletea](https://github.com/charmbracelet/bubbletea) for flicker-free rendering.
 
 ## Install
 
+### Homebrew
+
 ```
-npm install -g github-actions-watcher
+brew install dzoba/tap/ghaw
 ```
 
-Then run `ghaw` from any directory with a GitHub remote.
+### Go
+
+```
+go install github.com/dzoba/github-actions-watcher/cmd/ghaw@latest
+```
+
+### Binary
+
+Download from [GitHub Releases](https://github.com/dzoba/github-actions-watcher/releases).
+
+### Prerequisites
 
 Requires the [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated.
 
@@ -27,19 +35,17 @@ ghaw
 # Custom polling interval (default: 10s)
 ghaw --interval 5
 ghaw -i 30
-
-# Or use without installing
-npx github-actions-watcher
 ```
 
 ## Features
 
 - **Auto-detects repo** from git remote (SSH or HTTPS)
-- **Live polling** with countdown timer showing next refresh
+- **Live countdown timer** showing seconds until next refresh (flicker-free)
 - **Drill into runs** to see individual jobs and steps with durations
 - **Switch repos** on the fly with `s`
 - **Open in browser** with `o` from the detail view
 - **Responsive layout** -- columns adapt to terminal width
+- **Single binary** -- no Node.js runtime required
 
 ## Keybindings
 
@@ -68,8 +74,7 @@ npx github-actions-watcher
 ```bash
 git clone git@github.com:dzoba/github-actions-watcher.git
 cd github-actions-watcher
-npm install
-npx tsx src/cli.tsx
+go run ./cmd/ghaw
 ```
 
 ## License
