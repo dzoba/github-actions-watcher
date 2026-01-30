@@ -24,6 +24,7 @@ brews:
   - repository:
       owner: dzoba
       name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     homepage: https://github.com/dzoba/github-actions-watcher
     description: Terminal TUI for monitoring GitHub Actions workflow runs
     license: MIT
