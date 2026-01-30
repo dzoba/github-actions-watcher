@@ -2,11 +2,19 @@
 
 A terminal UI for monitoring GitHub Actions workflow runs. Auto-detects the repo from your current directory, shows recent runs, and lets you drill into jobs and steps -- all without leaving the terminal.
 
+## Quick start
+
+```
+npx github-actions-watcher
+```
+
 ## Install
 
-```bash
+```
 npm install -g github-actions-watcher
 ```
+
+Then run `ghaw` from any directory with a GitHub remote.
 
 Requires the [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated.
 
