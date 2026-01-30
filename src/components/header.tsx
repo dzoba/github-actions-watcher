@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Text } from "ink";
-import Spinner from "ink-spinner";
 
 interface Props {
   repo: string;
@@ -15,12 +14,7 @@ export function Header({ repo, loading }: Props) {
       </Text>
       <Text> - </Text>
       <Text bold>{repo}</Text>
-      {loading && (
-        <Text>
-          {" "}
-          <Spinner type="dots" />
-        </Text>
-      )}
+      <Text dimColor>{loading ? "  fetching..." : ""}</Text>
     </Box>
   );
 }

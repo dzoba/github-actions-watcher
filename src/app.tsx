@@ -1,11 +1,9 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Box, Text, useApp, useInput } from "ink";
-import Spinner from "ink-spinner";
 import type { View, WorkflowRun, RunDetail } from "./lib/types.js";
 import { fetchRuns, fetchRunDetail } from "./lib/gh.js";
 import { useRepo } from "./hooks/use-repo.js";
 import { usePolling } from "./hooks/use-polling.js";
-import { useCountdown } from "./hooks/use-countdown.js";
 import { Header } from "./components/header.js";
 import { Footer } from "./components/footer.js";
 import { RunList } from "./components/run-list.js";
@@ -43,7 +41,8 @@ export function App({ interval }: Props) {
     refresh: refreshRuns,
   } = usePolling<WorkflowRun[]>(runsFetcher, interval, !!repo);
 
-  const { secondsLeft, reset: resetCountdown } = useCountdown(interval, !!repo);
+  const [resetKey, setResetKey] = useState(0);
+  const resetCountdown = useCallback(() => setResetKey((k) => k + 1), []);
 
   // Fetch detail
   const fetchDetail = useCallback(async () => {
@@ -125,11 +124,7 @@ export function App({ interval }: Props) {
 
   // Loading state
   if (repoLoading) {
-    return (
-      <Text>
-        <Spinner type="dots" /> Detecting repository...
-      </Text>
-    );
+    return <Text dimColor>Detecting repository...</Text>;
   }
 
   if (repoError && !repo) {
@@ -203,7 +198,7 @@ export function App({ interval }: Props) {
         />
       )}
 
-      <Footer view={view} secondsLeft={secondsLeft} />
+      <Footer view={view} intervalMs={interval} resetKey={resetKey} />
     </Box>
   );
 }

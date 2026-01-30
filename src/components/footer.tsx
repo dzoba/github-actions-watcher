@@ -1,10 +1,12 @@
 import React from "react";
 import { Box, Text } from "ink";
 import type { View } from "../lib/types.js";
+import { Countdown } from "./countdown.js";
 
 interface Props {
   view: View;
-  secondsLeft?: number;
+  intervalMs: number;
+  resetKey: number;
 }
 
 const keys: Record<View, string> = {
@@ -13,14 +15,14 @@ const keys: Record<View, string> = {
   "repo-input": "enter: confirm | esc: cancel",
 };
 
-export function Footer({ view, secondsLeft }: Props) {
-  const showCountdown = secondsLeft !== undefined && (view === "list" || view === "detail");
+export function Footer({ view, intervalMs, resetKey }: Props) {
+  const showCountdown = view === "list" || view === "detail";
 
   return (
     <Box marginTop={1}>
       <Text dimColor>{keys[view]}</Text>
       {showCountdown && (
-        <Text dimColor> | refresh in {secondsLeft}s</Text>
+        <Countdown intervalMs={intervalMs} enabled={true} resetKey={resetKey} />
       )}
     </Box>
   );

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-export function useCountdown(intervalMs: number, enabled: boolean) {
+export function useCountdown(intervalMs: number, enabled: boolean, resetKey: number) {
   const [secondsLeft, setSecondsLeft] = useState(Math.floor(intervalMs / 1000));
   const lastResetRef = useRef(Date.now());
 
@@ -22,12 +22,7 @@ export function useCountdown(intervalMs: number, enabled: boolean) {
     }, 1000);
 
     return () => clearInterval(tick);
-  }, [intervalMs, enabled]);
+  }, [intervalMs, enabled, resetKey]);
 
-  const reset = () => {
-    lastResetRef.current = Date.now();
-    setSecondsLeft(Math.floor(intervalMs / 1000));
-  };
-
-  return { secondsLeft, reset };
+  return { secondsLeft };
 }

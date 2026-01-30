@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Text, useInput } from "ink";
-import Spinner from "ink-spinner";
 import type { RunDetail } from "../lib/types.js";
 import { StatusBadge } from "./status-badge.js";
 import { duration } from "../lib/format.js";
@@ -46,11 +45,7 @@ export function RunDetailView({
   );
 
   if (loading && !detail) {
-    return (
-      <Text>
-        <Spinner type="dots" /> Loading run details...
-      </Text>
-    );
+    return <Text dimColor>Loading run details...</Text>;
   }
 
   if (error) {
@@ -75,11 +70,7 @@ export function RunDetailView({
       <Text dimColor>
         {detail.workflowName} #{detail.number} on {detail.headBranch} ({detail.event})
       </Text>
-      {loading && (
-        <Text>
-          <Spinner type="dots" />
-        </Text>
-      )}
+      {loading && <Text dimColor> fetching...</Text>}
     </Box>,
   );
   lines.push(<Text key="sep" dimColor>{"---"}</Text>);
