@@ -21,7 +21,8 @@ archives:
         format: zip
 
 brews:
-  - repository:
+  - name: ghaw
+    repository:
       owner: dzoba
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
