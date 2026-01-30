@@ -41,23 +41,33 @@ export function App({ interval }: Props) {
     refresh: refreshRuns,
   } = usePolling<WorkflowRun[]>(runsFetcher, interval, !!repo);
 
-  const [resetKey, setResetKey] = useState(0);
-  const resetCountdown = useCallback(() => setResetKey((k) => k + 1), []);
 
   // Fetch detail
+  const detailFetchedRef = React.useRef(false);
+  const lastDetailJsonRef = React.useRef("");
+
   const fetchDetail = useCallback(async () => {
     if (!repo || selectedRunId === null) return;
-    setDetailLoading(true);
-    setDetailError(null);
+    if (!detailFetchedRef.current) {
+      setDetailLoading(true);
+    }
     try {
       const d = await fetchRunDetail(repo, selectedRunId);
-      setDetail(d);
+      const json = JSON.stringify(d);
+      if (json !== lastDetailJsonRef.current) {
+        lastDetailJsonRef.current = json;
+        setDetail(d);
+      }
+      if (detailError !== null) setDetailError(null);
     } catch (err) {
       setDetailError(err instanceof Error ? err.message : "Failed to fetch detail");
     } finally {
-      setDetailLoading(false);
+      if (!detailFetchedRef.current) {
+        detailFetchedRef.current = true;
+        setDetailLoading(false);
+      }
     }
-  }, [repo, selectedRunId]);
+  }, [repo, selectedRunId, detailError]);
 
   // Auto-fetch detail when entering detail view
   useEffect(() => {
@@ -82,7 +92,6 @@ export function App({ interval }: Props) {
         setView("repo-input");
       } else if (input === "r" && view === "list") {
         refreshRuns();
-        resetCountdown();
       }
     },
     { isActive: view === "list" || view === "detail" },
@@ -92,6 +101,8 @@ export function App({ interval }: Props) {
     setSelectedRunId(run.databaseId);
     setDetail(null);
     setDetailScrollOffset(0);
+    detailFetchedRef.current = false;
+    lastDetailJsonRef.current = "";
     setView("detail");
   }, []);
 
@@ -112,10 +123,9 @@ export function App({ interval }: Props) {
       setRepo(newRepo);
       setRuns(null);
       setSelectedIndex(0);
-      resetCountdown();
       setView("list");
     },
-    [setRepo, setRuns, resetCountdown],
+    [setRepo, setRuns],
   );
 
   const handleRepoCancel = useCallback(() => {
@@ -159,7 +169,7 @@ export function App({ interval }: Props) {
 
   return (
     <Box flexDirection="column">
-      <Header repo={repo} loading={runsLoading || detailLoading} />
+      <Header repo={repo} />
 
       {runsError && view === "list" && (
         <Text color="red">Error: {runsError}</Text>
@@ -198,7 +208,7 @@ export function App({ interval }: Props) {
         />
       )}
 
-      <Footer view={view} intervalMs={interval} resetKey={resetKey} />
+      <Footer view={view} intervalSeconds={Math.floor(interval / 1000)} />
     </Box>
   );
 }

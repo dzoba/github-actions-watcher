@@ -1,6 +1,6 @@
 {
   "name": "github-actions-watcher",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Terminal TUI for monitoring GitHub Actions workflow runs",
   "type": "module",
   "bin": {

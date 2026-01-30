@@ -9,25 +9,38 @@ export function usePolling<T>(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mountedRef = useRef(true);
+  const lastJsonRef = useRef<string>("");
+  const initialFetchDoneRef = useRef(false);
 
   const refresh = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+    // Only show loading state on first fetch, not background polls
+    if (!initialFetchDoneRef.current) {
+      setLoading(true);
+    }
     try {
       const result = await fetcher();
-      if (mountedRef.current) {
+      if (!mountedRef.current) return;
+
+      // Only update state if data actually changed
+      const json = JSON.stringify(result);
+      if (json !== lastJsonRef.current) {
+        lastJsonRef.current = json;
         setData(result);
       }
+      if (error !== null) setError(null);
     } catch (err) {
       if (mountedRef.current) {
         setError(err instanceof Error ? err.message : "Fetch failed");
       }
     } finally {
       if (mountedRef.current) {
-        setLoading(false);
+        if (!initialFetchDoneRef.current) {
+          initialFetchDoneRef.current = true;
+          setLoading(false);
+        }
       }
     }
-  }, [fetcher]);
+  }, [fetcher, error]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -38,6 +51,8 @@ export function usePolling<T>(
 
   useEffect(() => {
     if (!enabled) return;
+    initialFetchDoneRef.current = false;
+    lastJsonRef.current = "";
     refresh();
     const id = setInterval(refresh, intervalMs);
     return () => clearInterval(id);

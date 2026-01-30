@@ -3,10 +3,9 @@ import { Box, Text } from "ink";
 
 interface Props {
   repo: string;
-  loading: boolean;
 }
 
-export function Header({ repo, loading }: Props) {
+export function Header({ repo }: Props) {
   return (
     <Box marginBottom={1}>
       <Text bold color="cyan">
@@ -14,7 +13,6 @@ export function Header({ repo, loading }: Props) {
       </Text>
       <Text> - </Text>
       <Text bold>{repo}</Text>
-      <Text dimColor>{loading ? "  fetching..." : ""}</Text>
     </Box>
   );
 }
