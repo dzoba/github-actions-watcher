@@ -16,7 +16,6 @@ func FetchRepoList() ([]types.PickerRepo, error) {
 	out, err := exec.Command("gh", "repo", "list",
 		"--json", "nameWithOwner,pushedAt",
 		"--limit", "20",
-		"--sort", "updated",
 	).Output()
 	if err != nil {
 		return nil, fmt.Errorf("gh repo list failed: %w", err)
