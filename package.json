@@ -4,7 +4,7 @@
   "description": "Terminal TUI for monitoring GitHub Actions workflow runs",
   "type": "module",
   "bin": {
-    "gaw": "./dist/cli.js"
+    "ghaw": "./dist/cli.js"
   },
   "files": [
     "dist"
