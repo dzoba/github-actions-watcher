@@ -4,6 +4,7 @@ import type { View } from "../lib/types.js";
 
 interface Props {
   view: View;
+  secondsLeft?: number;
 }
 
 const keys: Record<View, string> = {
@@ -12,10 +13,15 @@ const keys: Record<View, string> = {
   "repo-input": "enter: confirm | esc: cancel",
 };
 
-export function Footer({ view }: Props) {
+export function Footer({ view, secondsLeft }: Props) {
+  const showCountdown = secondsLeft !== undefined && (view === "list" || view === "detail");
+
   return (
     <Box marginTop={1}>
       <Text dimColor>{keys[view]}</Text>
+      {showCountdown && (
+        <Text dimColor> | refresh in {secondsLeft}s</Text>
+      )}
     </Box>
   );
 }

@@ -5,6 +5,7 @@ import type { View, WorkflowRun, RunDetail } from "./lib/types.js";
 import { fetchRuns, fetchRunDetail } from "./lib/gh.js";
 import { useRepo } from "./hooks/use-repo.js";
 import { usePolling } from "./hooks/use-polling.js";
+import { useCountdown } from "./hooks/use-countdown.js";
 import { Header } from "./components/header.js";
 import { Footer } from "./components/footer.js";
 import { RunList } from "./components/run-list.js";
@@ -41,6 +42,8 @@ export function App({ interval }: Props) {
     error: runsError,
     refresh: refreshRuns,
   } = usePolling<WorkflowRun[]>(runsFetcher, interval, !!repo);
+
+  const { secondsLeft, reset: resetCountdown } = useCountdown(interval, !!repo);
 
   // Fetch detail
   const fetchDetail = useCallback(async () => {
@@ -80,6 +83,7 @@ export function App({ interval }: Props) {
         setView("repo-input");
       } else if (input === "r" && view === "list") {
         refreshRuns();
+        resetCountdown();
       }
     },
     { isActive: view === "list" || view === "detail" },
@@ -109,9 +113,10 @@ export function App({ interval }: Props) {
       setRepo(newRepo);
       setRuns(null);
       setSelectedIndex(0);
+      resetCountdown();
       setView("list");
     },
-    [setRepo, setRuns],
+    [setRepo, setRuns, resetCountdown],
   );
 
   const handleRepoCancel = useCallback(() => {
@@ -130,8 +135,15 @@ export function App({ interval }: Props) {
   if (repoError && !repo) {
     return (
       <Box flexDirection="column">
-        <Text color="red">Error: {repoError}</Text>
-        <Text dimColor>Run from a directory with a git remote, or press s to enter a repo manually.</Text>
+        <Box marginBottom={1}>
+          <Text bold color="cyan">GitHub Actions Watcher</Text>
+        </Box>
+        <Text color="yellow">No GitHub repository detected in this directory.</Text>
+        <Text dimColor>To get started, either:</Text>
+        <Box marginLeft={2} flexDirection="column" marginTop={1}>
+          <Text>  cd into a directory with a GitHub remote and run <Text bold>ghaw</Text></Text>
+          <Text>  or type a repo below (e.g. <Text bold>owner/repo</Text>)</Text>
+        </Box>
         <RepoInput
           currentRepo=""
           onConfirm={(r) => {
@@ -141,6 +153,9 @@ export function App({ interval }: Props) {
           onCancel={() => exit()}
           isActive={true}
         />
+        <Box marginTop={1}>
+          <Text dimColor>enter: confirm | esc/q: quit</Text>
+        </Box>
       </Box>
     );
   }
@@ -188,7 +203,7 @@ export function App({ interval }: Props) {
         />
       )}
 
-      <Footer view={view} />
+      <Footer view={view} secondsLeft={secondsLeft} />
     </Box>
   );
 }
