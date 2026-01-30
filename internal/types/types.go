@@ -6,7 +6,7 @@ type View int
 const (
 	ViewList View = iota
 	ViewDetail
-	ViewRepoInput
+	ViewRepoPicker
 	ViewWelcome
 )
 
@@ -78,4 +78,10 @@ type Job struct {
 type RunDetail struct {
 	WorkflowRun
 	Jobs []Job `json:"jobs"`
+}
+
+// PickerRepo is a repo entry for the repo picker.
+type PickerRepo struct {
+	NameWithOwner string `json:"nameWithOwner"`
+	PushedAt      string `json:"pushedAt"`
 }

@@ -108,6 +108,12 @@ func StatusBadge(status types.RunStatus, conclusion types.RunConclusion) (text s
 	}
 }
 
+// Elapsed returns a ticking elapsed duration string from startStr to now (e.g. "2m 31s").
+// Used for in-progress runs in list view.
+func Elapsed(startStr string) string {
+	return Duration(startStr, "")
+}
+
 // Pad right-pads s with spaces to width.
 func Pad(s string, width int) string {
 	if len(s) >= width {

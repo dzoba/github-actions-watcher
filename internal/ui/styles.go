@@ -12,6 +12,8 @@ var (
 	Green       = lipgloss.NewStyle().Foreground(lipgloss.Color("2"))
 	Red         = lipgloss.NewStyle().Foreground(lipgloss.Color("1"))
 	Gray        = lipgloss.NewStyle().Foreground(lipgloss.Color("8"))
+	TabActive   = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("6")).Background(lipgloss.Color("0"))
+	TabInactive = lipgloss.NewStyle().Faint(true)
 )
 
 // BadgeStyle returns a lipgloss style for the given color name.

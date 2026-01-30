@@ -11,6 +11,23 @@ import (
 
 const runFields = "databaseId,displayTitle,event,headBranch,name,number,status,conclusion,createdAt,updatedAt,url,workflowName"
 
+// FetchRepoList returns recently-pushed repos for the authenticated user.
+func FetchRepoList() ([]types.PickerRepo, error) {
+	out, err := exec.Command("gh", "repo", "list",
+		"--json", "nameWithOwner,pushedAt",
+		"--limit", "20",
+		"--sort", "updated",
+	).Output()
+	if err != nil {
+		return nil, fmt.Errorf("gh repo list failed: %w", err)
+	}
+	var repos []types.PickerRepo
+	if err := json.Unmarshal(out, &repos); err != nil {
+		return nil, fmt.Errorf("failed to parse repo list: %w", err)
+	}
+	return repos, nil
+}
+
 // FetchRuns returns the 20 most recent workflow runs for a repo.
 func FetchRuns(repo string) ([]types.WorkflowRun, error) {
 	out, err := exec.Command("gh", "run", "list",

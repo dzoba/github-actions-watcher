@@ -108,6 +108,33 @@ func TestStatusBadge(t *testing.T) {
 	}
 }
 
+func TestElapsed(t *testing.T) {
+	now := time.Now()
+	tests := []struct {
+		name  string
+		start time.Time
+		want  string
+	}{
+		{"seconds", now.Add(-30 * time.Second), "30s"},
+		{"minutes", now.Add(-5*time.Minute - 15*time.Second), "5m 15s"},
+		{"hours", now.Add(-2*time.Hour - 30*time.Minute), "2h 30m"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := Elapsed(tt.start.Format(time.RFC3339))
+			if got != tt.want {
+				t.Errorf("Elapsed() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestElapsedEmpty(t *testing.T) {
+	if got := Elapsed(""); got != "" {
+		t.Errorf("expected empty, got %q", got)
+	}
+}
+
 func TestPad(t *testing.T) {
 	if got := Pad("hi", 5); got != "hi   " {
 		t.Errorf("Pad = %q", got)

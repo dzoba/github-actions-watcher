@@ -9,17 +9,18 @@ import (
 )
 
 func (m Model) detailView() string {
-	if m.detailLoading && m.detail == nil {
+	t := m.tabs[m.activeTab]
+	if t.detailLoading && t.detail == nil {
 		return ui.Dim.Render("Loading run details...")
 	}
-	if m.detailError != "" {
-		return ui.Red.Render("Error: " + m.detailError)
+	if t.detailError != "" {
+		return ui.Red.Render("Error: " + t.detailError)
 	}
-	if m.detail == nil {
+	if t.detail == nil {
 		return ui.Dim.Render("No detail available.")
 	}
 
-	d := m.detail
+	d := t.detail
 	var lines []string
 
 	// Title line
@@ -29,7 +30,7 @@ func (m Model) detailView() string {
 
 	// Metadata line
 	meta := fmt.Sprintf("%s #%d on %s (%s)", d.WorkflowName, d.Number, d.HeadBranch, d.Event)
-	if m.detailLoading {
+	if t.detailLoading {
 		meta += " fetching..."
 	}
 	lines = append(lines, ui.Dim.Render(meta))
@@ -50,7 +51,7 @@ func (m Model) detailView() string {
 		for _, step := range job.Steps {
 			sbText, sbColor := format.StatusBadge(step.Status, step.Conclusion)
 			stepLine := "  " + ui.BadgeStyle(sbColor).Render(sbText) + " " + step.Name
-			if step.StartedAt != "" && step.CompletedAt != "" {
+			if step.StartedAt != "" {
 				stepLine += " " + ui.Dim.Render("("+format.Duration(step.StartedAt, step.CompletedAt)+")")
 			}
 			lines = append(lines, stepLine)
@@ -58,9 +59,9 @@ func (m Model) detailView() string {
 	}
 
 	// Apply scroll offset
-	if m.detailScrollOffset > 0 && m.detailScrollOffset < len(lines) {
-		lines = lines[m.detailScrollOffset:]
-	} else if m.detailScrollOffset >= len(lines) {
+	if t.detailScrollOffset > 0 && t.detailScrollOffset < len(lines) {
+		lines = lines[t.detailScrollOffset:]
+	} else if t.detailScrollOffset >= len(lines) {
 		lines = nil
 	}
 

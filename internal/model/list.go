@@ -4,11 +4,13 @@ import (
 	"strings"
 
 	"github.com/dzoba/github-actions-watcher/internal/format"
+	"github.com/dzoba/github-actions-watcher/internal/types"
 	"github.com/dzoba/github-actions-watcher/internal/ui"
 )
 
 func (m Model) listView() string {
-	if len(m.runs) == 0 {
+	t := m.tabs[m.activeTab]
+	if len(t.runs) == 0 {
 		return ui.Dim.Render("No workflow runs found.")
 	}
 
@@ -36,13 +38,13 @@ func (m Model) listView() string {
 	}
 
 	var b strings.Builder
-	for i, run := range m.runs {
+	for i, run := range t.runs {
 		if i > 0 {
 			b.WriteByte('\n')
 		}
 
 		// Selector
-		if i == m.selectedIndex {
+		if i == t.selectedIndex {
 			b.WriteString("> ")
 		} else {
 			b.WriteString("  ")
@@ -68,10 +70,14 @@ func (m Model) listView() string {
 		// Title (plain text)
 		b.WriteString(format.Pad(format.Truncate(run.DisplayTitle, titleMax), titleMax))
 
-		// Time (pad plain text, then style)
+		// Time column: elapsed for in-progress, relative for others
 		if showTime {
 			b.WriteByte(' ')
-			b.WriteString(ui.Dim.Render(format.Pad(format.RelativeTime(run.CreatedAt), 8)))
+			if run.Status == types.StatusInProgress {
+				b.WriteString(ui.Yellow.Render(format.Pad(format.Elapsed(run.CreatedAt), 8)))
+			} else {
+				b.WriteString(ui.Dim.Render(format.Pad(format.RelativeTime(run.CreatedAt), 8)))
+			}
 		}
 	}
 	return b.String()
